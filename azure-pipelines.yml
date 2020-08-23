@@ -6,13 +6,16 @@ pool:
   demands:
     - npm
 
-variables: buildConfiguration: 'Release' wwwrootDir: 'Tailspin.SpaceGame.Web/wwwroot' dotnetSdkVersion: '3.1.300'
+variables:
+  buildConfiguration: 'Release'
+  wwwrootDir: 'Tailspin.SpaceGame.Web/wwwroot'
+  dotnetSdkVersion: '3.1.300'
 
 steps:
 - task: UseDotNet@2
-displayName: 'Usar el SDK de .NET Core $(dotnetSdkVersion)'
+  displayName: 'Use .NET Core SDK $(dotnetSdkVersion)'
   inputs:
-versión: '$(dotnetSdkVersion)'
+    version: '$(dotnetSdkVersion)'
 
 - task: Npm@1
   displayName: 'Run npm install'
@@ -27,7 +30,7 @@ versión: '$(dotnetSdkVersion)'
 
 - script: 'echo "$(Build.DefinitionName), $(Build.BuildId), $(Build.BuildNumber)" > buildinfo.txt'
   displayName: 'Write build info'
-workingDirectory: $(wwwrootDir)
+  workingDirectory: $(wwwrootDir)
 
 - task: DotNetCoreCLI@2
   displayName: 'Restore project dependencies'
@@ -36,19 +39,19 @@ workingDirectory: $(wwwrootDir)
     projects: '**/*.csproj'
 
 - task: DotNetCoreCLI@2
-displayName: 'Build the project - $(buildConfiguration)'
+  displayName: 'Build the project - $(buildConfiguration)'
   inputs:
     command: 'build'
-argumentos: '--no-restore --configuration $(buildConfiguration)'
+    arguments: '--no-restore --configuration $(buildConfiguration)'
     projects: '**/*.csproj'
 
 - task: DotNetCoreCLI@2
-displayName: 'Publicar el proyecto - $(buildConfiguration)'
+  displayName: 'Publish the project - $(buildConfiguration)'
   inputs:
     command: 'publish'
     projects: '**/*.csproj'
     publishWebProjects: false
-argumentos: '--no-build --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
+    arguments: '--no-build --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
     zipAfterPublish: true
 
 - task: PublishBuildArtifacts@1
